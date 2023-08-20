@@ -1,0 +1,29 @@
+name: update-history
+run-name: fetching latest data
+on:
+  schedule:
+    - cron: '0 4 * * *'
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.5.1
+      - name: Change directory
+        run: cd scripts
+      - name: Install project dependencies
+        run: poetry install
+      - name: Fetch the data
+        run: poetry run ./fetch.py ../docs/history.json
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'ci: history updated'
