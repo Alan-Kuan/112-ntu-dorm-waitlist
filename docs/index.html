@@ -106,22 +106,25 @@
     </footer>
 
     <script>
-      (async () => {
-        const { createApp } = Vue;
-        let history = {};
+      const { createApp, ref } = Vue;
 
-        await fetch('./history.json')
-          .then(res => res.json())
-          .then(data => history = data);
+      createApp({
+        setup() {
+          const history = ref({
+            '112-1研究所宿舍申請': [],
+            '112-1學士班學生申請校內宿舍(舊生候補)': [],
+            '學士班新生宿舍暑假住宿申請作業': [],
+          });
 
-        createApp({
-          setup() {
-            return {
-              history,
-            };
-          },
-        }).mount('#app');
-      })();
+          return {
+            history,
+          };
+        },
+        async mounted() {
+          this.history = await fetch('./history.json')
+            .then(res => res.json());
+        },
+      }).mount('#app');
     </script>
   </body>
 </html>
