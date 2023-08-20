@@ -47,45 +47,24 @@
         >
           <thead class="bg-gray-3">
             <tr class="font-500">
-              <th class="
-                w-30 p-1
-                border-solid border-size-1"
+              <th
+                v-for="title in ['日期', '男生', '女生']"
+                class="
+                  w-30 p-1
+                  border-solid border-size-1"
               >
-                日期
-              </th>
-              <th class="
-                w-20 p-1
-                border-solid border-size-1"
-              >
-                男生
-              </th>
-              <th class="
-                w-20 p-1
-                border-solid border-size-1"
-              >
-                女生
+                {{ title }}
               </th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in group">
-              <td class="
-                p-1
-                border-solid border-size-1"
+              <td v-for="key in ['date', 'male', 'female']"
+                class="
+                  p-1
+                  border-solid border-size-1"
               >
-                {{ item.date }}
-              </td>
-              <td class="
-                p-1
-                border-solid border-size-1"
-              >
-                {{ item.male }}
-              </td>
-              <td class="
-                p-1
-                border-solid border-size-1"
-              >
-                {{ item.female }}
+                {{ item[key] }}
               </td>
             </tr>
           </tbody>
