@@ -37,13 +37,15 @@
       </p>
 
       <div
-        v-for="group, name in history"
+        v-for="group in groups"
         class="mb-10"
       >
-        <h2 class="font-200">{{ name }}</h2>
-        <table class="
-          border-collapse border-solid border-size-1
-          text-center"
+        <h2 class="font-200">{{ group.name }}</h2>
+        <table
+          v-if="Object.keys(history).length > 0"
+          class="
+            border-collapse border-solid border-size-1
+            text-center"
         >
           <thead class="bg-gray-3">
             <tr class="font-500">
@@ -58,13 +60,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in group">
+            <tr v-for="_, i in history[group.key].date">
               <td v-for="key in ['date', 'male', 'female']"
                 class="
                   p-1
                   border-solid border-size-1"
               >
-                {{ item[key] }}
+                {{ history[group.key][key][i] }}
               </td>
             </tr>
           </tbody>
@@ -89,13 +91,24 @@
 
       createApp({
         setup() {
-          const history = ref({
-            '112-1研究所宿舍申請': [],
-            '112-1學士班學生申請校內宿舍(舊生候補)': [],
-            '學士班新生宿舍暑假住宿申請作業': [],
-          });
+          const groups = [
+            {
+              key: 'graduate',
+              name: '112-1研究所宿舍申請',
+            },
+            {
+              key: 'undergraduate',
+              name: '112-1學士班學生申請校內宿舍(舊生候補)',
+            },
+            {
+              key: 'summer',
+              name: '學士班新生宿舍暑假住宿申請作業',
+            },
+          ];
+          const history = ref({});
 
           return {
+            groups,
             history,
           };
         },
