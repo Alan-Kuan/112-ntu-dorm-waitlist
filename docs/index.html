@@ -10,14 +10,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@200;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;400;500&family=Roboto+Mono&display=swap" rel="stylesheet">
 
     <style>
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-    }
+      .noto-sans-tc {
+        font-family: 'Noto Sans TC', sans-serif;
+      }
+      .roboto-mono {
+        font-family: 'Roboto Mono', monospace;
+      }
     </style>
   </head>
-  <body class="bg-light">
+  <body class="bg-light noto-sans-tc">
     <div id="app" class="lg:w-50% lt-lg:w-75% mx-auto">
       <h1 class="font-500">112-1 臺灣大學宿舍候補紀錄</h1>
 
@@ -37,26 +41,26 @@
         <h2 class="font-200">{{ name }}</h2>
         <table class="
           border-collapse border-solid border-size-1
-          text-center
-        ">
+          text-center"
+        >
           <thead class="bg-gray-3">
             <tr class="font-500">
               <th class="
                 w-30 p-1
-                border-solid border-size-1
-              ">
+                border-solid border-size-1"
+              >
                 日期
               </th>
               <th class="
                 w-20 p-1
-                border-solid border-size-1
-              ">
+                border-solid border-size-1"
+              >
                 男生
               </th>
               <th class="
                 w-20 p-1
-                border-solid border-size-1
-              ">
+                border-solid border-size-1"
+              >
                 女生
               </th>
             </tr>
@@ -65,20 +69,20 @@
             <tr v-for="item in group">
               <td class="
                 p-1
-                border-solid border-size-1
-              ">
+                border-solid border-size-1"
+              >
                 {{ item.date }}
               </td>
               <td class="
                 p-1
-                border-solid border-size-1
-              ">
+                border-solid border-size-1"
+              >
                 {{ item.male }}
               </td>
               <td class="
                 p-1
-                border-solid border-size-1
-              ">
+                border-solid border-size-1"
+              >
                 {{ item.female }}
               </td>
             </tr>
@@ -87,23 +91,35 @@
       </div>
     </div>
 
+    <footer class="
+      fixed bottom-0
+      w-full pa-1
+      bg-gray-2
+      text-center"
+    >
+      <span style="letter-spacing: 0.5rem;">本網站的內容皆開源於</span>
+      <a class="roboto-mono" href="https://github.com/Alan-Kuan/112-ntu-dorm-waitlist" target="_blank">
+        GitHub
+      </a>
+    </footer>
+
     <script>
-    (async () => {
-      const { createApp } = Vue;
-      let history = {};
+      (async () => {
+        const { createApp } = Vue;
+        let history = {};
 
-      await fetch('./history.json')
-      .then(res => res.json())
-      .then(data => history = data);
+        await fetch('./history.json')
+        .then(res => res.json())
+        .then(data => history = data);
 
-      createApp({
-        setup() {
-          return {
-            history,
-          };
-        },
-      }).mount('#app');
-    })();
+        createApp({
+          setup() {
+            return {
+              history,
+            };
+          },
+        }).mount('#app');
+      })();
     </script>
   </body>
 </html>
