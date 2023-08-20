@@ -7,6 +7,7 @@
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,6 +42,11 @@
         class="mb-10"
       >
         <h2 class="font-200">{{ group.name }}</h2>
+
+        <div class="mb-5">
+          <canvas :id="`chart-${ group.key }`"></canvas>
+        </div>
+
         <table
           v-if="Object.keys(history).length > 0"
           class="
@@ -115,6 +121,43 @@
         async mounted() {
           this.history = await fetch('./history.json')
             .then(res => res.json());
+
+          for (const group of this.groups) {
+            const ctx = document.getElementById(`chart-${ group.key }`);
+
+            new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: this.history[group.key].date,
+                datasets: [
+                  {
+                    label: '男生',
+                    data: this.history[group.key].male,
+                  },
+                  {
+                    label: '女生',
+                    data: this.history[group.key].female,
+                  }
+                ]
+              },
+              options: {
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: '日期',
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: '已補到的候補序號',
+                    },
+                  },
+                },
+              },
+            });
+          }
         },
       }).mount('#app');
     </script>
