@@ -42,7 +42,13 @@
         v-for="group in groups"
         class="mb-10"
       >
-        <h2 class="font-200">{{ group.name }}</h2>
+        <h2 class="
+          pl-2
+          border-l-5 border-l-solid border-red-8
+          font-200"
+        >
+          {{ group.name }}
+        </h2>
 
         <div class="mb-5">
           <canvas :id="`chart-${ group.key }`"></canvas>
