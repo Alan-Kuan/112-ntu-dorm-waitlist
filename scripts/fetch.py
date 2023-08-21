@@ -21,6 +21,7 @@ mapping = {
     '112-1研究所宿舍申請': 'graduate',
     '112-1學士班學生申請校內宿舍(舊生候補)': 'undergraduate',
     '學士班新生宿舍暑假住宿申請作業': 'summer',
+    '111-2新生宿舍遷出及高年級宿舍調遷作業': 'move',
 }
 
 for item in data:
