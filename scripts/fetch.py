@@ -26,15 +26,9 @@ mapping = {
 
 for item in data:
     group = history[mapping[item['name']]]
-    today = str(date.today())
-
-    if group['date'][-1] == today:
-        group['male'][-1] = item['male']
-        group['female'][-1] = item['female']
-    else:
-        group['date'].append(str(date.today()))
-        group['male'].append(item['male'])
-        group['female'].append(item['female'])
+    group['date'].append(str(date.today()))
+    group['male'].append(item['male'])
+    group['female'].append(item['female'])
 
 with open(history_path, 'w', encoding='utf8') as f:
     json.dump(history, f, ensure_ascii=False, indent=4)

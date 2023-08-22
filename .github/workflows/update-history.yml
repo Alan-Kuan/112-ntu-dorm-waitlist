@@ -2,7 +2,7 @@ name: update-history
 run-name: fetching latest data
 on:
   schedule:
-    - cron: '20 1-9 * * 1-5'
+    - cron: '2 10 * * 1-5'
 jobs:
   fetch:
     runs-on: ubuntu-latest
