@@ -31,4 +31,4 @@ for item in data:
     group['female'].append(item['female'])
 
 with open(history_path, 'w', encoding='utf8') as f:
-    json.dump(history, f, ensure_ascii=False, indent=4)
+    json.dump(history, f, ensure_ascii=False, separators=(',', ':'))
