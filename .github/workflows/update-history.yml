@@ -25,7 +25,7 @@ jobs:
         run: poetry install
       - name: Fetch the data
         working-directory: ./scripts
-        run: poetry run ./fetch.py ../docs/history.json
+        run: poetry run ./fetch.py ../site/history.json
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
