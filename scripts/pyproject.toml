@@ -1,10 +1,8 @@
 [tool.poetry]
-name = "ntu-dorm"
+name = "112-ntu-dorm-waitlist"
 version = "0.1.0"
 description = ""
 authors = ["Alan-Kuan <kuanhaoan@gmail.com>"]
-readme = "README.md"
-packages = [{include = "ntu_dorm"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
