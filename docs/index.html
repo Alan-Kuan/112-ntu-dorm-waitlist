@@ -53,6 +53,12 @@
           font-200"
         >
           {{ group_name }}
+          <span
+            v-if="group_key === 'summer'"
+            class="text-red-600 font-500"
+          >
+            (本站停止更新)
+          </span>
         </h2>
 
         <div class="mb-5">
@@ -134,7 +140,10 @@
             .then(res => res.json())
             .then(data => {
               for (const item of data) {
-                const group = this.history[this.groups[item.name]];
+                const key = this.groups[item.name];
+                if (key === 'summer') continue;
+
+                const group = this.history[key];
                 const today = (new Date()).toISOString().split('T')[0];
 
                 group.date.push(today);

@@ -25,7 +25,11 @@ mapping = {
 }
 
 for item in data:
-    group = history[mapping[item['name']]]
+    key = mapping[item['name']]
+    if key == 'summer':
+        continue
+
+    group = history[key]
     group['date'].append(str(date.today()))
     group['male'].append(item['male'])
     group['female'].append(item['female'])
