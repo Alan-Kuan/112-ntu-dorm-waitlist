@@ -17,11 +17,11 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: 1.5.1
-      - name: Change directory
-        run: cd scripts
       - name: Install project dependencies
+        working-directory: ./scripts
         run: poetry install
       - name: Fetch the data
+        working-directory: ./scripts
         run: poetry run ./fetch.py ../docs/history.json
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
