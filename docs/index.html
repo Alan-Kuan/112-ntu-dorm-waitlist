@@ -29,8 +29,7 @@
       <h1 class="font-500">112-1 臺灣大學宿舍候補紀錄</h1>
 
       <p class="line-height-normal">
-        本站於平日 09:00 - 17:00 每隔一小時更新一次，
-        且只保留當日最後更新的資料。
+        當天的資料為即時的，已過去的資料為每個平日 18:00 保存的資料。
       </p>
       <p>
         ※ 08/01 至 08/18 研究生宿舍的紀錄為友人提供的資料。
@@ -45,7 +44,7 @@
       <div class="border-b-1 border-b-solid border-gray"></div>
 
       <div
-        v-for="group in groups"
+        v-for="group_key, group_name in groups"
         class="mb-10"
       >
         <h2 class="
@@ -53,11 +52,11 @@
           border-l-5 border-l-solid border-red-8
           font-200"
         >
-          {{ group.name }}
+          {{ group_name }}
         </h2>
 
         <div class="mb-5">
-          <canvas :id="`chart-${ group.key }`"></canvas>
+          <canvas :id="`chart-${ group_key }`"></canvas>
         </div>
 
         <table
@@ -80,13 +79,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="_, i in history[group.key].date">
+            <tr v-for="_, i in history[group_key].date">
               <td v-for="key in ['date', 'male', 'female']"
                 class="
                   p-1
                   border-solid border-size-1"
               >
-                {{ history[group.key][key][i] }}
+                {{ history[group_key][key][i] }}
               </td>
             </tr>
           </tbody>
@@ -113,24 +112,12 @@
 
       createApp({
         setup() {
-          const groups = [
-            {
-              key: 'graduate',
-              name: '112-1研究所宿舍申請',
-            },
-            {
-              key: 'undergraduate',
-              name: '112-1學士班學生申請校內宿舍(舊生候補)',
-            },
-            {
-              key: 'summer',
-              name: '學士班新生宿舍暑假住宿申請作業',
-            },
-            {
-              key: 'move',
-              name: '111-2新生宿舍遷出及高年級宿舍調遷作業',
-            }
-          ];
+          const groups = {
+            '112-1研究所宿舍申請': 'graduate',
+            '112-1學士班學生申請校內宿舍(舊生候補)': 'undergraduate',
+            '學士班新生宿舍暑假住宿申請作業': 'summer',
+            '111-2新生宿舍遷出及高年級宿舍調遷作業': 'move',
+          };
           const history = ref({});
 
           return {
@@ -142,21 +129,35 @@
           this.history = await fetch('./history.json')
             .then(res => res.json());
 
-          for (const group of this.groups) {
-            const ctx = document.getElementById(`chart-${ group.key }`);
+          const data_endpoint = 'https://housing.ntu.edu.tw/index/get.progress.json';
+          await fetch(data_endpoint)
+            .then(res => res.json())
+            .then(data => {
+              for (const item of data) {
+                const group = this.history[this.groups[item.name]];
+                const today = (new Date()).toISOString().split('T')[0];
+
+                group.date.push(today);
+                group.male.push(item.male);
+                group.female.push(item.female);
+              }
+            });
+
+          for (const group_key of Object.values(this.groups)) {
+            const ctx = document.getElementById(`chart-${ group_key }`);
 
             new Chart(ctx, {
               type: 'line',
               data: {
-                labels: this.history[group.key].date,
+                labels: this.history[group_key].date,
                 datasets: [
                   {
                     label: '男生',
-                    data: this.history[group.key].male,
+                    data: this.history[group_key].male,
                   },
                   {
                     label: '女生',
-                    data: this.history[group.key].female,
+                    data: this.history[group_key].female,
                   }
                 ]
               },
