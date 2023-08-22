@@ -1,6 +1,7 @@
 name: update-history
 run-name: fetching latest data
 on:
+  push:
   schedule:
     - cron: '2 10 * * 1-5'
 jobs:
