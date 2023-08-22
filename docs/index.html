@@ -135,22 +135,26 @@
           this.history = await fetch('./history.json')
             .then(res => res.json());
 
-          const data_endpoint = 'https://housing.ntu.edu.tw/index/get.progress.json';
-          await fetch(data_endpoint)
-            .then(res => res.json())
-            .then(data => {
-              for (const item of data) {
-                const key = this.groups[item.name];
-                if (key === 'summer') continue;
+          const today = (new Date()).toISOString().split('T')[0];
 
-                const group = this.history[key];
-                const today = (new Date()).toISOString().split('T')[0];
+          if (this.history.graduate.date.slice(-1)[0] !== today) {
+            const data_endpoint = 'https://housing.ntu.edu.tw/index/get.progress.json';
 
-                group.date.push(today);
-                group.male.push(item.male);
-                group.female.push(item.female);
-              }
-            });
+            await fetch(data_endpoint)
+              .then(res => res.json())
+              .then(data => {
+                for (const item of data) {
+                  const key = this.groups[item.name];
+                  if (key === 'summer') continue;
+
+                  const group = this.history[key];
+
+                  group.date.push(today);
+                  group.male.push(item.male);
+                  group.female.push(item.female);
+                }
+              });
+          }
 
           for (const group_key of Object.values(this.groups)) {
             const ctx = document.getElementById(`chart-${ group_key }`);
