@@ -5,6 +5,9 @@ on:
     branches: ["main"]
     paths: ["site/**"]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["update-history"]
+    types: ["completed"]
 
 permissions:
   contents: read
