@@ -141,6 +141,8 @@
 
           if (data.last_saved_date !== this.today) {
             await this.fetchLatestData();
+          } else {
+            await setTimeout(() => {}, 100);
           }
 
           this.drawCharts();
