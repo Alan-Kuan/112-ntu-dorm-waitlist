@@ -54,7 +54,7 @@
         >
           {{ group_name }}
           <span
-            v-if="group_key === 'summer'"
+            v-if="ignored_groups.includes(group_key)"
             class="text-red-600 font-500"
           >
             (本站停止更新)
@@ -120,15 +120,17 @@
         setup() {
           const groups = {
             '112-1研究所宿舍申請': 'graduate',
+            '學士班新生暨轉學生申請宿舍': 'new-and-transfer',
             '112-1學士班學生申請校內宿舍(舊生候補)': 'undergraduate',
             '學士班新生宿舍暑假住宿申請作業': 'summer',
             '111-2新生宿舍遷出及高年級宿舍調遷作業': 'move',
-            '學士班新生暨轉學生申請宿舍': 'new-and-transfer',
           };
+          const ignored_groups = [ 'summer', 'move' ];
           const history = ref({});
 
           return {
             groups,
+            ignored_groups,
             history,
           };
         },
@@ -146,7 +148,10 @@
               .then(data => {
                 for (const item of data) {
                   const key = this.groups[item.name];
-                  if (key === 'summer') continue;
+
+                  if (this.ignored_groups.includes(key)) {
+                    continue
+                  };
 
                   const group = this.history[key];
 
