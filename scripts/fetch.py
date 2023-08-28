@@ -14,26 +14,33 @@ url = 'https://housing.ntu.edu.tw/index/get.progress.json'
 res = requests.get(url)
 data = res.json()
 
-with open(history_path) as f:
-    history = json.load(f)
+# it seemed like it won't get updated, so I decided to ignore it
+ignored_groups = [
+    '學士班新生宿舍暑假住宿申請作業',
+];
 
-mapping = {
-    '112-1研究所宿舍申請': 'graduate',
-    '112-1學士班學生申請校內宿舍(舊生候補)': 'undergraduate',
-    '學士班新生宿舍暑假住宿申請作業': 'summer',
-    '111-2新生宿舍遷出及高年級宿舍調遷作業': 'move',
-    '學士班新生暨轉學生申請宿舍': 'new-and-transfer',
-}
+try:
+    with open(history_path) as f:
+        history = json.load(f)
+except:
+    history = {}
 
 for item in data:
-    key = mapping[item['name']]
-    if key == 'summer':
+    key = item['name']
+    if key in ignored_groups:
         continue
 
-    group = history[key]
-    group['date'].append(str(date.today()))
-    group['male'].append(item['male'])
-    group['female'].append(item['female'])
+    if key in history:
+        group = history[key]
+        group['date'].append(str(date.today()))
+        group['male'].append(item['male'])
+        group['female'].append(item['female'])
+    else:
+        history[key] = {
+            'date': [str(date.today())],
+            'male': [item['male']],
+            'female': [item['female']],
+        }
 
 with open(history_path, 'w', encoding='utf8') as f:
     json.dump(history, f, ensure_ascii=False, separators=(',', ':'))
