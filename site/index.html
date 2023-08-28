@@ -33,6 +33,8 @@
       </p>
       <p>
         ※ 08/01 至 08/18 研究生宿舍的紀錄為友人提供的資料。
+        <br />
+        ※ 本站於 08/22 自行決定停止更新「學士班新生宿舍暑假住宿申請作業」。
       </p>
       <p>
         資料來源：
@@ -44,7 +46,7 @@
       <div class="border-b-1 border-b-solid border-gray"></div>
 
       <div
-        v-for="group_key, group_name in groups"
+        v-for="group, name in history"
         class="mb-10"
       >
         <h2 class="
@@ -52,17 +54,17 @@
           border-l-5 border-l-solid border-red-8
           font-200"
         >
-          {{ group_name }}
+          {{ name }}
           <span
-            v-if="ignored_groups.includes(group_key)"
+            v-if="group.date.slice(-1)[0] !== today"
             class="text-red-600 font-500"
           >
-            (本站停止更新)
+            (停止更新)
           </span>
         </h2>
 
         <div class="mb-5">
-          <canvas :id="`chart-${ group_key }`"></canvas>
+          <canvas :id="`chart-${name}`"></canvas>
         </div>
 
         <table
@@ -85,13 +87,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="_, i in history[group_key].date">
-              <td v-for="key in ['date', 'male', 'female']"
+            <tr v-for="_, i in group.date">
+              <td
+                v-for="key in ['date', 'male', 'female']"
                 class="
                   p-1
                   border-solid border-size-1"
               >
-                {{ history[group_key][key][i] }}
+                {{ group[key][i] }}
               </td>
             </tr>
           </tbody>
@@ -118,86 +121,92 @@
 
       createApp({
         setup() {
-          const groups = {
-            '112-1研究所宿舍申請': 'graduate',
-            '學士班新生暨轉學生申請宿舍': 'new-and-transfer',
-            '112-1學士班學生申請校內宿舍(舊生候補)': 'undergraduate',
-            '學士班新生宿舍暑假住宿申請作業': 'summer',
-            '111-2新生宿舍遷出及高年級宿舍調遷作業': 'move',
-          };
-          const ignored_groups = [ 'summer', 'move' ];
+          const ignored_groups = [
+            '學士班新生宿舍暑假住宿申請作業',
+          ];
+          const today = (new Date()).toISOString().split('T')[0];
           const history = ref({});
 
           return {
-            groups,
             ignored_groups,
+            today,
             history,
           };
         },
         async mounted() {
-          this.history = await fetch('./history.json')
+          const data = await fetch('./history.json')
             .then(res => res.json());
 
-          const today = (new Date()).toISOString().split('T')[0];
+          this.history = data.history;
 
-          if (this.history.graduate.date.slice(-1)[0] !== today) {
-            const data_endpoint = 'https://housing.ntu.edu.tw/index/get.progress.json';
+          if (data.last_saved_date !== this.today) {
+            await this.fetchLatestData();
+          }
 
-            await fetch(data_endpoint)
+          this.drawCharts();
+        },
+        methods: {
+          async fetchLatestData() {
+            const endpoint = 'https://housing.ntu.edu.tw/index/get.progress.json';
+
+            await fetch(endpoint)
               .then(res => res.json())
               .then(data => {
                 for (const item of data) {
-                  const key = this.groups[item.name];
+                  const name = item.name;
 
-                  if (this.ignored_groups.includes(key)) {
+                  if (this.ignored_groups.includes(name)) {
                     continue
                   };
 
-                  const group = this.history[key];
+                  if (name in this.history) {
+                    const group = this.history[name];
 
-                  group.date.push(today);
-                  group.male.push(item.male);
-                  group.female.push(item.female);
+                    group.date.push(this.today);
+                    group.male.push(item.male);
+                    group.female.push(item.female);
+                  } else {
+                    this.history[name] = {
+                      date: [this.today],
+                      male: [item.male],
+                      female: [item.female],
+                    };
+                  }
                 }
               });
-          }
+          },
+          drawCharts() {
+            for (const [ name, group ] of Object.entries(this.history)) {
+              const ctx = document.getElementById(`chart-${name}`);
 
-          for (const group_key of Object.values(this.groups)) {
-            const ctx = document.getElementById(`chart-${ group_key }`);
-
-            new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: this.history[group_key].date,
-                datasets: [
-                  {
-                    label: '男生',
-                    data: this.history[group_key].male,
-                  },
-                  {
-                    label: '女生',
-                    data: this.history[group_key].female,
-                  }
-                ]
-              },
-              options: {
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: '日期',
+              new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: group.date,
+                  datasets: [
+                    { label: '男生', data: group.male },
+                    { label: '女生', data: group.female },
+                  ]
+                },
+                options: {
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: '日期',
+                      },
                     },
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: '已補到的候補序號',
+                    y: {
+                      title: {
+                        display: true,
+                        text: '已補到的候補序號',
+                      },
                     },
                   },
                 },
-              },
-            });
-          }
+              });
+            }
+          },
         },
       }).mount('#app');
     </script>
