@@ -10,22 +10,23 @@ if len(sys.argv) < 2:
 
 history_path = sys.argv[1]
 
-url = 'https://housing.ntu.edu.tw/index/get.progress.json'
-res = requests.get(url)
-data = res.json()
+try:
+    with open(history_path) as f:
+        data = json.load(f)
+        history = data['history']
+except:
+    history = {}
 
 # it seemed like it won't get updated, so I decided to ignore it
 ignored_groups = [
     '學士班新生宿舍暑假住宿申請作業',
 ];
 
-try:
-    with open(history_path) as f:
-        history = json.load(f)
-except:
-    history = {}
-
 today = str(date.today())
+
+url = 'https://housing.ntu.edu.tw/index/get.progress.json'
+res = requests.get(url)
+data = res.json()
 
 for item in data:
     key = item['name']
