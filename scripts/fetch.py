@@ -25,6 +25,8 @@ try:
 except:
     history = {}
 
+today = str(date.today())
+
 for item in data:
     key = item['name']
     if key in ignored_groups:
@@ -32,15 +34,20 @@ for item in data:
 
     if key in history:
         group = history[key]
-        group['date'].append(str(date.today()))
+        group['date'].append(today)
         group['male'].append(item['male'])
         group['female'].append(item['female'])
     else:
         history[key] = {
-            'date': [str(date.today())],
+            'date': [today],
             'male': [item['male']],
             'female': [item['female']],
         }
 
+data = {
+    'history': history,
+    'last_saved_date': today,
+}
+
 with open(history_path, 'w', encoding='utf8') as f:
-    json.dump(history, f, ensure_ascii=False, separators=(',', ':'))
+    json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
